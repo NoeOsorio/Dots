@@ -4,6 +4,8 @@ function Line(props) {
 
     let chooseLine = () => {
         console.log("Clic on me : " + props.id)
+        let selected = document.getElementById(props.id)
+        selected.className = "selected"
     }
 
     return (
