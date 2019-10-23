@@ -1,13 +1,23 @@
 #square{
     width: 100px;
     height: 100px;
-    background:inherit;
+    background: aliceblue;
 }
 
-div.set1 {
-    color: blue;
+.set-0 {
+    width: 100px;
+    height: 100px;
+    background: aliceblue;
 }
 
-div.set2 {
-    color: red;
+.set-1 {
+    width: 100px;
+    height: 100px;
+    background: yellow;
+}
+
+.set-2 {
+    width: 100px;
+    height: 100px;
+    background: violet;
 }

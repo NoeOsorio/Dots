@@ -25,8 +25,7 @@ class Board extends React.Component {
                 [14, 17, 18, 21], [15, 18, 19, 22], [16, 19, 20, 23],
             ],
             score: [],
-
-            turn: true,
+            turn: false,
         };
         this.handleLineClick = this.handleLineClick.bind(this)
         this.playTurn = this.playTurn.bind(this)
@@ -36,20 +35,9 @@ class Board extends React.Component {
             React.createRef(), React.createRef(), React.createRef(),
             React.createRef(), React.createRef(), React.createRef()
         ]
-
-
-        // this.sqr1 = React.createRef();
-        // this.sqr2 = React.createRef();
-        // this.sqr3 = React.createRef();
-        // this.sqr4 = React.createRef();
-        // this.sqr5 = React.createRef();
-        // this.sqr6 = React.createRef();
-        // this.sqr7 = React.createRef();
-        // this.sqr8 = React.createRef();
-        // this.sqr9 = React.createRef();
     }
 
-    handleLineClick(id) {
+    async handleLineClick(id) {
         id = parseInt(id)
         let temp = this.state.lines
 
@@ -59,9 +47,9 @@ class Board extends React.Component {
             return
         }
 
-        this.setState({
+        await this.setState({
             lines: temp,
-            turn: !this.state.turn,
+            turn: false,
         })
 
         for (const i in this.state.squares) {
@@ -69,23 +57,31 @@ class Board extends React.Component {
                 const square = this.state.squares[i];
                 if (square.includes(id)) {
                     if (square.every(line => this.state.lines[line] !== 0)) {
-                        console.log(`Square ${i} completeded by Player`)
-                        this.squares[i].current.className = "set-1"
-                        console.log(this.squares[i].current)
+                        console.log("Complete!")
+                        this.setState({
+                            turn: true
+                          });
+                        this.squares[i].current.innerHTML = '<div class="set-1"></div>'
                     }
                     break;
                 }
             }
         }
 
-        this.playTurn()
+        if (!this.state.turn) {
+            this.playTurn()
+        } else {
+            this.drawBoard()
+        }
     }
 
     playTurn() {
         let temp = this.state.lines
+        let id
 
         for (let [key, value] of Object.entries(temp)) {
             if (value !== 1 && value !== 2) {
+                id = parseInt(key)
                 temp[key] = 2
                 break
             }
@@ -93,8 +89,23 @@ class Board extends React.Component {
 
         this.setState({
             lines: temp,
-            turn: !this.state.turn,
-        })
+            turn: true
+          });
+
+        for (const i in this.state.squares) {
+            if (this.state.squares.hasOwnProperty(i)) {
+                const square = this.state.squares[i];
+                if (square.includes(id)) {
+                    if (square.every(line => this.state.lines[line] !== 0)) {
+                        this.setState({
+                          turn: false
+                        });
+                        this.squares[i].current.innerHTML = '<div class="set-2"></div>'
+                    }
+                    break;
+                }
+            }
+        }
 
         this.drawBoard()
     }
