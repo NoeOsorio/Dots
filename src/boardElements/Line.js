@@ -1,25 +1,31 @@
 import React from 'react';
 import './Line.css';
-function Line(props) {
 
-    let chooseLine = () => {
-        console.log("Clic on me : " + props.id)
-        let selected = document.getElementById(props.id)
-        selected.className = "selected"
+class Line extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.chooseLine = this.chooseLine.bind(this)
     }
 
-    return (
-        <div className="line"
-            id={props.id}
-            style={{
-                height: props.vertical ? "100px" : "50px",
-                width: props.vertical ? "50px" : "100px"
-            }}
-            onClick={chooseLine}
-        >
+    chooseLine() {
+        this.props.onLineClick(this.props.id)
+    }
 
-        </div>
-    );
+    render() {
+        return (
+            <div className="line"
+                id={this.props.id}
+                style={{
+                    height: this.props.vertical ? "100px" : "50px",
+                    width: this.props.vertical ? "50px" : "100px"
+                }}
+                onClick={this.chooseLine}
+            >
+
+            </div>
+        )
+    }
 }
 
 export default Line;

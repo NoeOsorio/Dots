@@ -8,6 +8,10 @@
     background:#558B2F;
 }
 
-.selected {
+.player1 {
     background: blue;
+}
+
+.player2 {
+    background: red;
 }
