@@ -1,13 +1,12 @@
-
-import React from 'react';
-import './Board.css';
-import Dot from './boardElements/Dot';
-import Line from './boardElements/Line';
-import Square from './boardElements/Square';
+import React from "react"
+import "./Board.css"
+import Dot from "./boardElements/Dot"
+import Line from "./boardElements/Line"
+import Square from "./boardElements/Square"
 
 class Board extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       lines: {
         0: 0,
@@ -48,10 +47,10 @@ class Board extends React.Component {
       ],
       score: [],
       turn: false
-    };
-    this.handleLineClick = this.handleLineClick.bind(this);
-    this.playTurn = this.playTurn.bind(this);
-    this.drawBoard = this.drawBoard.bind(this);
+    }
+    this.handleLineClick = this.handleLineClick.bind(this)
+    this.playTurn = this.playTurn.bind(this)
+    this.drawBoard = this.drawBoard.bind(this)
     this.squares = [
       React.createRef(),
       React.createRef(),
@@ -62,103 +61,135 @@ class Board extends React.Component {
       React.createRef(),
       React.createRef(),
       React.createRef()
-    ];
+    ]
   }
 
   async handleLineClick(id) {
-    id = parseInt(id);
-    let temp = this.state.lines;
+    id = parseInt(id)
+    let temp = this.state.lines
 
     if (
       !(document.getElementById(id).className === "player1") &&
       !(document.getElementById(id).className === "player2")
     ) {
-      temp[id] = 1;
+      temp[id] = 1
     } else {
-      return;
+      return
     }
 
     await this.setState({
       lines: temp,
       turn: false
-    });
+    })
 
     for (const i in this.state.squares) {
       if (this.state.squares.hasOwnProperty(i)) {
-        const square = this.state.squares[i];
+        const square = this.state.squares[i]
         if (square.includes(id)) {
           if (square.every(line => this.state.lines[line] !== 0)) {
-            console.log("Complete!");
+            console.log("Complete!")
             this.setState({
               turn: true
-            });
-            this.squares[i].current.innerHTML = '<div class="set-1"></div>';
+            })
+            this.squares[i].current.innerHTML = '<div class="set-1"></div>'
           }
-          break;
+          break
         }
       }
     }
 
     if (!this.state.turn) {
-      this.playTurn();
+      this.playTurn()
     } else {
-      this.drawBoard();
+      this.drawBoard()
     }
   }
 
   playTurn() {
-    this.countChains();
-    let temp = this.state.lines;
-    let id;
-
+    let temp = this.state.lines
+    let id
+    let chains = []
+    
     for (let [key, value] of Object.entries(temp)) {
-      if (value !== 1 && value !== 2) {
-        id = parseInt(key);
-        temp[key] = 2;
-        break;
+      let test = temp
+      if (value === 0) {
+          test[key] = 2
+          let chainCount = this.countChains(test)
+          console.log(`Analisis resulto en ${chainCount} cadenas`)
+          chains.push(chainCount)
+          test[key] = 0
       }
     }
+
+    // const max = chains.indexOf(Math.max.apply(Math, chains))
+    // if (temp[max] === 0) {
+    //     temp[max] = 2
+    //     id = temp[max]
+    // } else {
+    //     chains.splice(max, 1)
+        
+    // }
 
     this.setState({
       lines: temp,
       turn: true
-    });
+    })
 
     for (const i in this.state.squares) {
       if (this.state.squares.hasOwnProperty(i)) {
-        const square = this.state.squares[i];
+        const square = this.state.squares[i]
         if (square.includes(id)) {
           if (square.every(line => this.state.lines[line] !== 0)) {
             this.setState({
               turn: false
-            });
-            this.squares[i].current.innerHTML = '<div class="set-2"></div>';
+            })
+            this.squares[i].current.innerHTML = '<div class="set-2"></div>'
           }
-          break;
+          break
         }
       }
     }
 
     if (!this.state.turn) {
-      this.playTurn();
+      this.playTurn()
     } else {
-        this.drawBoard();
+      this.drawBoard()
     }
-    this.drawBoard();
+    this.drawBoard()
   }
 
   drawBoard() {
     for (let line in Object.keys(this.state.lines)) {
       if (this.state.lines[line] === 1) {
-        document.getElementById(line).className = "player1";
+        document.getElementById(line).className = "player1"
       } else if (this.state.lines[line] === 2) {
-        document.getElementById(line).className = "player2";
+        document.getElementById(line).className = "player2"
       }
     }
   }
 
-  countChains() {
-      
+  countChains(move) {
+    var chainCount = 0
+    for (const i in this.state.squares) {
+      if (this.state.squares.hasOwnProperty(i)) {
+        const square = this.state.squares[i]
+        if (square.some(line => move[line] === 0)) {
+          //Cuadros no completos
+          let selected = square.map(line => {
+            //Para ver cuantas lineas seleccionadas hay
+            if (move[line] !== 0) {
+              return line
+            }
+          })
+          selected = selected.filter(item => item)
+          if (selected.length === 3) {
+            //Falta un movimiento para cerrar el cuadro
+            chainCount = chainCount + 1
+          }
+        }
+      }
+    }
+    return chainCount
   }
 
   render() {
@@ -376,8 +407,8 @@ class Board extends React.Component {
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
 
-export default Board;
+export default Board
