@@ -82,6 +82,7 @@ class Board extends React.Component {
       turn: false
     })
 
+
     for (const i in this.state.squares) {
       if (this.state.squares.hasOwnProperty(i)) {
         const square = this.state.squares[i]
@@ -93,7 +94,7 @@ class Board extends React.Component {
             })
             this.squares[i].current.innerHTML = '<div class="set-1"></div>'
           }
-          break
+          // break
         }
       }
     }
@@ -109,16 +110,36 @@ class Board extends React.Component {
     let temp = this.state.lines
     let id
     let chains = []
-    
+    let goodMoves = []
+    let bigger = {
+      id : 0,
+      count : -1,
+    }
     for (let [key, value] of Object.entries(temp)) {
       let test = temp
       if (value === 0) {
-          test[key] = 2
-          let chainCount = this.countChains(test)
-          console.log(`Analisis resulto en ${chainCount} cadenas`)
-          chains.push(chainCount)
-          test[key] = 0
+        test[key] = 2
+        let chainCount = this.countChains(test)
+        // console.log(`Analisis resulto en ${chainCount} cadenas con id: ${key}`)
+        if(chainCount > bigger.count){
+          
+          // bigger.id = parseInt(key);
+          bigger.count = chainCount;
+          
+        }
+        chains.push({id: parseInt(key), count : chainCount})
+        test[key] = 0
       }
+    }
+    try {
+      
+      goodMoves = chains.filter(line => line.count === bigger.count)
+      console.log(goodMoves)
+      bigger = goodMoves[Math.floor(Math.random() * goodMoves.length)];
+      console.log(`Best move on id: ${bigger.id} with ${bigger.count} chains`);
+      temp[bigger.id] = 2
+    } catch (error) {
+      console.log(bigger)
     }
 
     // const max = chains.indexOf(Math.max.apply(Math, chains))
@@ -127,7 +148,7 @@ class Board extends React.Component {
     //     id = temp[max]
     // } else {
     //     chains.splice(max, 1)
-        
+
     // }
 
     this.setState({
@@ -138,8 +159,10 @@ class Board extends React.Component {
     for (const i in this.state.squares) {
       if (this.state.squares.hasOwnProperty(i)) {
         const square = this.state.squares[i]
-        if (square.includes(id)) {
+        if (square.includes(bigger.id)) {
+          // console.log(square)
           if (square.every(line => this.state.lines[line] !== 0)) {
+            console.log("Complete!")
             this.setState({
               turn: false
             })
@@ -190,6 +213,10 @@ class Board extends React.Component {
       }
     }
     return chainCount
+  }
+
+  getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min) ) + min;
   }
 
   render() {
