@@ -109,35 +109,49 @@ class Board extends React.Component {
   playTurn() {
     let temp = this.state.lines
     let id
+    let high = 0
+    let caminos = []
     let chains = []
     let goodMoves = []
-    let bigger = {
-      id : 0,
-      count : -1,
-    }
+    let bigger
+
+
+
     for (let [key, value] of Object.entries(temp)) {
       let test = temp
       if (value === 0) {
-        test[key] = 2
-        let chainCount = this.countChains(test)
-        // console.log(`Analisis resulto en ${chainCount} cadenas con id: ${key}`)
-        if(chainCount > bigger.count){
-          
-          // bigger.id = parseInt(key);
-          bigger.count = chainCount;
-          
-        }
-        chains.push({id: parseInt(key), count : chainCount})
-        test[key] = 0
+        console.log()
+        let path = this.getPaths([parseInt(key)], temp)
+        if(path.length > high){
+
+          high = path.length
+        } 
+        caminos.push(path)
       }
     }
+
     try {
-      
-      goodMoves = chains.filter(line => line.count === bigger.count)
+      console.log(caminos)
+
+      goodMoves = caminos.filter(camino => camino.length === high)
       console.log(goodMoves)
       bigger = goodMoves[Math.floor(Math.random() * goodMoves.length)];
-      console.log(`Best move on id: ${bigger.id} with ${bigger.count} chains`);
-      temp[bigger.id] = 2
+      
+      if(!bigger.length){
+        let valid = []
+        for (let [key, value] of Object.entries(temp)) {
+          if (value === 0) {
+            valid.push(parseInt(key))
+          }
+        }
+        let rand = valid[Math.floor(Math.random() * valid.length)]
+        bigger = valid.filter(line => line == rand)
+      }
+      console.log(bigger)
+      this.turn(bigger, 2)
+      // console.log(bigger)
+      // console.log(`Best move on id: ${bigger} with ${bigger.length} chains`);
+      // temp[bigger.id] = 2
     } catch (error) {
       console.log(bigger)
     }
@@ -151,27 +165,7 @@ class Board extends React.Component {
 
     // }
 
-    this.setState({
-      lines: temp,
-      turn: true
-    })
-
-    for (const i in this.state.squares) {
-      if (this.state.squares.hasOwnProperty(i)) {
-        const square = this.state.squares[i]
-        if (square.includes(bigger.id)) {
-          // console.log(square)
-          if (square.every(line => this.state.lines[line] !== 0)) {
-            console.log("Complete!")
-            this.setState({
-              turn: false
-            })
-            this.squares[i].current.innerHTML = '<div class="set-2"></div>'
-          }
-          break
-        }
-      }
-    }
+   
 
     if (!this.state.turn) {
       this.playTurn()
@@ -179,6 +173,36 @@ class Board extends React.Component {
       this.drawBoard()
     }
     this.drawBoard()
+  }
+
+  turn(path, player){
+
+    let temp = this.state.lines
+
+    path.forEach(line =>{
+      this.state.lines[line] = player
+      this.setState({
+        lines: temp,
+        turn: true
+      })
+  
+      for (const i in this.state.squares) {
+        if (this.state.squares.hasOwnProperty(i)) {
+          const square = this.state.squares[i]
+          if (square.includes(line)) {
+            // console.log(square)
+            if (square.every(line => this.state.lines[line] !== 0)) {
+              console.log("Complete!")
+              this.setState({
+                turn: false
+              })
+              this.squares[i].current.innerHTML = '<div class="set-2"></div>'
+            }
+            break
+          }
+        }
+      }
+    })
   }
 
   drawBoard() {
@@ -215,8 +239,72 @@ class Board extends React.Component {
     return chainCount
   }
 
+  getPaths(keys, gameState) {
+    // console.log(keys)
+    keys.forEach(line => {
+      // let gameState = this.state.lines
+      gameState[line] = 2
+      // console.log(this.isClosed(line))
+      if (this.isClosed(line)) {
+        console.log("Se puede cerrar")
+        for (let [key, value] of Object.entries(gameState)) {
+          if (value === 0) {
+            keys.push(parseInt(key))
+            console.log(keys)
+            // keys.concat(this.getPaths(keys, gameState))
+          }
+        }
+      }
+      else {
+        keys.splice(keys.indexOf(line), 1)
+      }
+      gameState[line] = 0
+      // console.log(keys)
+      
+    });
+    return keys
+
+    // for (const i in this.state.squares) {
+    //   if (this.state.squares.hasOwnProperty(i)) {
+    //     const square = this.state.squares[i]
+    //     if (square.some(line => move[line] === 0)) {
+    //       //Cuadros no completos
+    //       let selected = square.map(line => {
+    //         //Para ver cuantas lineas seleccionadas hay
+    //         if (move[line] !== 0) {
+    //           return line
+    //         }
+    //       })
+    //       selected = selected.filter(item => item)
+    //       if (selected.length === 3) {
+    //         //Falta un movimiento para cerrar el cuadro
+    //         chainCount = chainCount + 1
+    //       }
+    //     }
+    //   }
+    // }
+  }
+
+  isClosed(id) {
+    // console.log(id)
+    for (const i in this.state.squares) {
+      if (this.state.squares.hasOwnProperty(i)) {
+        const square = this.state.squares[i]
+        // console.log(square)
+        if (square.includes(id)) {
+          if (square.every(line => this.state.lines[line] !== 0)) {
+            console.log("Complete!")
+            return true
+          }
+          // break
+        }
+      }
+    }
+    return false
+  }
+
   getRndInteger(min, max) {
-    return Math.floor(Math.random() * (max - min) ) + min;
+    return Math.floor(Math.random() * (max - min)) + min;
   }
 
   render() {
