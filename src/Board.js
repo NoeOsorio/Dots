@@ -32,8 +32,8 @@ class Board extends React.Component {
         this.playTurn = this.playTurn.bind(this)
         this.drawBoard = this.drawBoard.bind(this)
         this.squares = [
-            React.createRef(), React.createRef(), React.createRef(), 
-            React.createRef(), React.createRef(), React.createRef(), 
+            React.createRef(), React.createRef(), React.createRef(),
+            React.createRef(), React.createRef(), React.createRef(),
             React.createRef(), React.createRef(), React.createRef()
         ]
 
@@ -71,6 +71,7 @@ class Board extends React.Component {
                     if (square.every(line => this.state.lines[line] !== 0)) {
                         console.log(`Square ${i} completeded by Player`)
                         this.squares[i].current.className = "set-1"
+                        console.log(this.squares[i].current)
                     }
                     break;
                 }
@@ -126,11 +127,17 @@ class Board extends React.Component {
                     <div className="col-12">
                         <div className="row">
                             <Line id="3" onLineClick={this.handleLineClick} vertical="true" turn={this.state.turn} />
-                            <Square ref={this.squares[0]} />
+                            <div ref={this.squares[0]}>
+                                <Square />
+                            </div>
                             <Line id="4" onLineClick={this.handleLineClick} vertical="true" turn={this.state.turn} />
-                            <Square ref={this.squares[1]} />
+                            <div ref={this.squares[1]}>
+                                <Square />
+                            </div>
                             <Line id="5" onLineClick={this.handleLineClick} vertical="true" turn={this.state.turn} />
-                            <Square ref={this.squares[2]} />
+                            <div ref={this.squares[2]} >
+                                <Square />
+                            </div>
                             <Line id="6" onLineClick={this.handleLineClick} vertical="true" turn={this.state.turn} />
                         </div>
                     </div>
@@ -150,11 +157,17 @@ class Board extends React.Component {
                     <div className="col-12">
                         <div className="row">
                             <Line id="10" onLineClick={this.handleLineClick} vertical="true" turn={this.state.turn} />
-                            <Square ref={this.squares[3]} />
+                            <div ref={this.squares[3]}>
+                                <Square />
+                            </div>
                             <Line id="11" onLineClick={this.handleLineClick} vertical="true" turn={this.state.turn} />
-                            <Square ref={this.squares[4]} />
+                            <div ref={this.squares[4]}>
+                                <Square />
+                            </div>
                             <Line id="12" onLineClick={this.handleLineClick} vertical="true" turn={this.state.turn} />
-                            <Square ref={this.squares[5]} />
+                            <div ref={this.squares[5]}>
+                                <Square />
+                            </div>
                             <Line id="13" onLineClick={this.handleLineClick} vertical="true" turn={this.state.turn} />
                         </div>
                     </div>
@@ -174,11 +187,17 @@ class Board extends React.Component {
                     <div className="col-12">
                         <div className="row">
                             <Line id="17" onLineClick={this.handleLineClick} vertical="true" turn={this.state.turn} />
-                            <Square ref={this.squares[6]} />
+                            <div ref={this.squares[6]}>
+                                <Square />
+                            </div>
                             <Line id="18" onLineClick={this.handleLineClick} vertical="true" turn={this.state.turn} />
-                            <Square ref={this.squares[7]} />
+                            <div ref={this.squares[7]}>
+                                <Square />
+                            </div>
                             <Line id="19" onLineClick={this.handleLineClick} vertical="true" turn={this.state.turn} />
-                            <Square ref={this.squares[8]} />
+                            <div ref={this.squares[8]}>
+                                <Square />
+                            </div>
                             <Line id="20" onLineClick={this.handleLineClick} vertical="true" turn={this.state.turn} />
                         </div>
                     </div>
