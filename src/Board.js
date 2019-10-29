@@ -65,6 +65,7 @@ class Board extends React.Component {
   }
 
   async handleLineClick(id) {
+    console.clear()
     id = parseInt(id)
     let temp = this.state.lines
 
@@ -120,13 +121,14 @@ class Board extends React.Component {
     for (let [key, value] of Object.entries(temp)) {
       let test = temp
       if (value === 0) {
-        console.log()
+        // console.log(temp)
         let path = this.getPaths([parseInt(key)], temp)
+        // console.log(path)
         if(path.length > high){
-
           high = path.length
         } 
         caminos.push(path)
+        // console.log(caminos)
       }
     }
 
@@ -135,9 +137,16 @@ class Board extends React.Component {
 
       goodMoves = caminos.filter(camino => camino.length === high)
       console.log(goodMoves)
-      bigger = goodMoves[Math.floor(Math.random() * goodMoves.length)];
+      if(goodMoves.length){
+
+        bigger = goodMoves[Math.floor(Math.random() * goodMoves.length)];
+      }
+      else{
+        bigger = goodMoves[0]
+      }
       
       if(!bigger.length){
+        console.log("No hay ninguna")
         let valid = []
         for (let [key, value] of Object.entries(temp)) {
           if (value === 0) {
@@ -147,7 +156,7 @@ class Board extends React.Component {
         let rand = valid[Math.floor(Math.random() * valid.length)]
         bigger = valid.filter(line => line == rand)
       }
-      console.log(bigger)
+      // console.log(bigger)
       this.turn(bigger, 2)
       // console.log(bigger)
       // console.log(`Best move on id: ${bigger} with ${bigger.length} chains`);
@@ -176,32 +185,36 @@ class Board extends React.Component {
   }
 
   turn(path, player){
-
+    console.log(path)
     let temp = this.state.lines
 
     path.forEach(line =>{
       this.state.lines[line] = player
-      this.setState({
-        lines: temp,
-        turn: true
-      })
+      
   
       for (const i in this.state.squares) {
         if (this.state.squares.hasOwnProperty(i)) {
           const square = this.state.squares[i]
           if (square.includes(line)) {
-            // console.log(square)
+            console.log(square)
+            
             if (square.every(line => this.state.lines[line] !== 0)) {
               console.log("Complete!")
               this.setState({
                 turn: false
               })
               this.squares[i].current.innerHTML = '<div class="set-2"></div>'
+            }else{
+              square.forEach(line => console.log(`Line ${line} with value: ${this.state.lines[line]}`))
             }
-            break
+
           }
         }
       }
+      this.setState({
+        lines: temp,
+        turn: true
+      })
     })
   }
 
@@ -219,6 +232,7 @@ class Board extends React.Component {
     var chainCount = 0
     for (const i in this.state.squares) {
       if (this.state.squares.hasOwnProperty(i)) {
+
         const square = this.state.squares[i]
         if (square.some(line => move[line] === 0)) {
           //Cuadros no completos
@@ -229,6 +243,7 @@ class Board extends React.Component {
             }
           })
           selected = selected.filter(item => item)
+          // console.log(selected)
           if (selected.length === 3) {
             //Falta un movimiento para cerrar el cuadro
             chainCount = chainCount + 1
@@ -246,43 +261,23 @@ class Board extends React.Component {
       gameState[line] = 2
       // console.log(this.isClosed(line))
       if (this.isClosed(line)) {
-        console.log("Se puede cerrar")
-        for (let [key, value] of Object.entries(gameState)) {
-          if (value === 0) {
-            keys.push(parseInt(key))
-            console.log(keys)
-            // keys.concat(this.getPaths(keys, gameState))
-          }
-        }
+        console.log(`Se puede cerrar Linea ${line}`)
+        // for (let [key, value] of Object.entries(gameState)) {
+        //   if (value === 0) {
+        //     keys.push(parseInt(key))
+        //     console.log(keys)
+
+        //   }
+        // }
       }
       else {
         keys.splice(keys.indexOf(line), 1)
       }
       gameState[line] = 0
-      // console.log(keys)
       
     });
+    // console.log(keys)
     return keys
-
-    // for (const i in this.state.squares) {
-    //   if (this.state.squares.hasOwnProperty(i)) {
-    //     const square = this.state.squares[i]
-    //     if (square.some(line => move[line] === 0)) {
-    //       //Cuadros no completos
-    //       let selected = square.map(line => {
-    //         //Para ver cuantas lineas seleccionadas hay
-    //         if (move[line] !== 0) {
-    //           return line
-    //         }
-    //       })
-    //       selected = selected.filter(item => item)
-    //       if (selected.length === 3) {
-    //         //Falta un movimiento para cerrar el cuadro
-    //         chainCount = chainCount + 1
-    //       }
-    //     }
-    //   }
-    // }
   }
 
   isClosed(id) {
